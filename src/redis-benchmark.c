@@ -253,7 +253,9 @@ static void writeHandler(aeEventLoop *el, int fd, void *privdata, int mask) {
        // if (config.randomkeys) randomizeClientKey(c);
         c->start = ustime();
         c->latency = -1;
+        if (c->obuf) sdsfree(c->obuf);
         c->obuf = c->ct->generate_command(c->ct->key_current++);
+        c->pending = 1;
     }
 
     if (sdslen(c->obuf) > c->written) {
@@ -323,6 +325,7 @@ static client createClientV2(generateCommandFunc func, size_t start, size_t tota
     c->ct->key_current = start;
     c->ct->key_end = start + total;
     c->ct->generate_command = func;
+    c->obuf = sdsempty();
 
     if (config.hostsocket == NULL) {
         c->context = redisConnectNonBlock(config.hostip,config.hostport);
@@ -346,7 +349,7 @@ static client createClientV2(generateCommandFunc func, size_t start, size_t tota
     // c->obuf = c->ct->generateCommand(c->ct->keyCurrent++);
     c->randlen = 0;
     c->written = 0;
-    c->pending = 1;
+    c->pending = 0;
     //c->pending = config.pipeline;
 
     /* Find substrings in the output buffer that need to be randomized. */
