@@ -599,9 +599,6 @@ int test_is_selected(char *name) {
 
 int main(int argc, const char **argv) {
     int i;
-    char *data, *cmd;
-    int len;
-
     client c;
 
     signal(SIGHUP, SIG_IGN);
@@ -647,6 +644,7 @@ int main(int argc, const char **argv) {
     }
 
     /* Run benchmark with command in the remainder of the arguments. */
+    /*
     if (argc) {
         sds title = sdsnew(argv[0]);
         for (i = 1; i < argc; i++) {
@@ -662,13 +660,11 @@ int main(int argc, const char **argv) {
 
         return 0;
     }
+    */
 
     /* Run default benchmark suite. */
     do {
-        data = zmalloc(config.datasize+1);
-        memset(data,'x',config.datasize);
-        data[config.datasize] = '\0';
-
+        /*
         if (test_is_selected("ping_inline") || test_is_selected("ping"))
             benchmark("PING_INLINE","PING\r\n",6);
 
@@ -677,7 +673,7 @@ int main(int argc, const char **argv) {
             benchmark("PING_BULK",cmd,len);
             free(cmd);
         }
-
+        */
         if (test_is_selected("set")) {
             benchmark_v2("SET", generate_command_4_set);
         }
@@ -685,7 +681,7 @@ int main(int argc, const char **argv) {
         if (test_is_selected("get")) {
             benchmark_v2("GET", generate_command_4_get);
         }
-
+        /*
         if (test_is_selected("incr")) {
             len = redisFormatCommand(&cmd,"INCR counter:rand:000000000000");
             benchmark("INCR",cmd,len);
@@ -763,7 +759,7 @@ int main(int argc, const char **argv) {
             benchmark("MSET (10 keys)",cmd,len);
             free(cmd);
         }
-
+        */
         if (!config.csv) printf("\n");
     } while(config.loop);
 
